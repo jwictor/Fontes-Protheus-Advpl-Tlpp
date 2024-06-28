@@ -1,0 +1,78 @@
+#include 'totvs.ch'
+#include 'tlpp-core.th'
+
+ /*/{Protheus.doc} U_DESCONTO
+    (long_description)
+    @type  User Function
+    @author João Wictor de Oliveira Carvalho
+    @since 07/05/2024
+    @version 1.1
+    @param Codigo, Contrato, Tipo Numerico, Paramentros do fonte de impressão, sendo enviado codigo e contrato para consulta e validação.
+    @return Retorno True ou False, Retorno tipo logico, Deve retornar se o cupom de impressão deve ser impresso ou não
+    @example
+    (Se o cliente estiver com saldo zero e sem nenhuma parcela com a data de hoje, ira retornar Verdadeiro e será feita a impressão, 
+    caso seja uma venda a vulso tambem não sera feita a impressão, o contrato vem como N/A, retona False e sai da condição. )
+    @see (links_r_references https://centraldeatendimento.totvs.com/hc/pt-br/articles/16705515938711-Cross-Segmento-TOTVS-Backoffice-Linha-Protheus-ADVPL
+    -Uso-de-fun%C3%A7%C3%B5es-TLPP-no-AdvPL)
+    /*/
+Function U_DESCONTO(Codigo, Contrato) as logical
+
+    Local cSQL      as character
+    Local cAliasSQL as character
+    Local lVencido as logical
+    Local nVlrVencido := 0
+    Local lContinua   := .T.
+
+    //Local lRPC := .F.
+    Local cCodigo := Codigo
+    Local cContrato := Contrato
+
+   // IF type('cEmpAnt') <> 'C'
+    //    rpcSetEnv("01","010101")
+   //     lRPC := .T.
+   // EndIF  
+
+    IF cContrato == 'N/A'
+       lContinua           := .F. 
+       Return .F.
+    EndIF
+
+    If lContinua 
+
+    cSQL        := "SELECT * FROM " + retSqlName("SE1") + " SE1 "
+    cSQL        += "WHERE E1_NUM= '" + cContrato + "' AND E1_CLIENTE= '" + cCodigo + "' "
+    cSQL        += "AND E1_SALDO<>'0' "
+    cSQL        += "AND E1_PREFIXO = 'FUN' "
+    cSQL        += "AND D_E_L_E_T_ = '' "
+    
+
+    cAliasSQL       := getNextAlias()
+
+    dbUseArea(.T.,"TOPCONN",tcGenQry(,,cSQL),cAliasSQL,.T.,.T.) 
+
+     
+
+    While .not. (cAliasSQL)->(eof())
+
+    IF (cAliasSQL)->E1_VENCREA < dtos(ddatabase)
+        nVlrVencido += (cAliasSQL)->E1_SALDO
+        lVencido := .T.
+    EndIF
+
+        (cAliasSQL)->(dbSkip())
+
+    Enddo 
+
+    IF   lVencido == .F.
+        Return .T.
+        (cAliasSQL)->(dbCloseArea())
+    else 
+        Return .F.
+        (cAliasSQL)->(dbCloseArea())
+    EndIf
+
+   // IF lRPC
+    //    rpcClearEnv()
+ //   EndIF
+
+EndIf

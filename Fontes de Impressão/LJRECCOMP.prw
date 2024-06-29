@@ -121,9 +121,8 @@ cMsgComprovante += Replicate("-",LARG-1)
 
 //Imprimi
 
-IF lPaCupom == .T.
 
-IF tlpp.call('U_DESCONTO', SA1->A1_COD,cContrato) == .T.
+IF lPaCupom  .And. tlpp.call('U_DESCONTO', SA1->A1_COD,cContrato)
 
 IFRelGer( nHdlECF, cMsgComprovante, 2 )
 //-------------CUPOM DE DESCONTO-------------------
@@ -143,11 +142,11 @@ cMsgD += Replicate("-",LARG-1)
 
 //Imprimi
 IFRelGer(nHdlECF,cMsgD,1)
+
 Else 
 
 IFRelGer( nHdlECF, cMsgComprovante, 2 )
 
-EndIF
 EndIF
 
 

@@ -19,7 +19,7 @@ Function U_DESCONTO(Codigo, Contrato) as logical
 
     Local cSQL      as character
     Local cAliasSQL as character
-    Local lVencido as logical
+    Local lVencido  as logical
     Local nVlrVencido := 0
     Local lContinua   := .T.
 
@@ -50,8 +50,6 @@ Function U_DESCONTO(Codigo, Contrato) as logical
 
     dbUseArea(.T.,"TOPCONN",tcGenQry(,,cSQL),cAliasSQL,.T.,.T.) 
 
-     
-
     While .not. (cAliasSQL)->(eof())
 
     IF (cAliasSQL)->E1_VENCREA < dtos(ddatabase)
@@ -64,11 +62,11 @@ Function U_DESCONTO(Codigo, Contrato) as logical
     Enddo 
 
     IF   lVencido == .F.
-        Return .T.
-        (cAliasSQL)->(dbCloseArea())
-    else 
-        Return .F.
-        (cAliasSQL)->(dbCloseArea())
+        dbCloseArea()
+        Return .T.      
+    Else 
+        dbCloseArea()
+        Return .F.    
     EndIf
 
    // IF lRPC

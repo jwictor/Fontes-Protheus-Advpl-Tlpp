@@ -143,7 +143,7 @@ cMsgD += 	"Beneficiário: " + AllTrim(SA1->A1_NOME) + ENTER
 cMsgD += 	"Código Cliente: " + AllTrim(SA1->A1_COD) + Space(7) + "Contrato: " + cContrato + ENTER
 cMsgD += 	"Plano: " + cPlano + ENTER + ENTER
 cMsgD +=    "Status:" +  "AUTORIZADO" + ENTER
-cMsgD += "Status:" + IF (cContrato == "N/A", "NÃO AUTORIZADO", "AUTORIZADO") + ENTER
+//cMsgD += "Status:" + IF (cContrato == "N/A", "NÃO AUTORIZADO", "AUTORIZADO") + ENTER
 cMsgD += 	"Válido por 30 dias a partir desta data" + ENTER
 cMsgD += "Data: " +  DTOC(Date()) + " - " +SubStr(Time(),1,5) + ENTER
 cMsgD += "Dica: Desconto em toda rede de parceiros local" + ENTER

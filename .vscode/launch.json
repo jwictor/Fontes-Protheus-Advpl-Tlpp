@@ -9,7 +9,8 @@
 			"cwb": "${workspaceFolder}",
 			"smartclientBin": "C:\\Protheus 2310\\Protheus Produção 2310 Loja - DEV\\smartclient.exe",
 			"isMultiSession": true,
-			"enableTableSync": true
+			"enableTableSync": true,
+			"enableMultiThread": true
 		}
 	],
 	"lastPrograms": [

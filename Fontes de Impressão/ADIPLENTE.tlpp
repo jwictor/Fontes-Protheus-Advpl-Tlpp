@@ -1,7 +1,7 @@
 #include 'totvs.ch'
 #include 'tlpp-core.th'
 
- /*/{Protheus.doc} U_DESCONTO
+ /*/{Protheus.doc} U_ADIPLENTE
     (long_description)
     @type  User Function
     @author João Wictor de Oliveira Carvalho
@@ -15,7 +15,7 @@
     @see (links_r_references https://centraldeatendimento.totvs.com/hc/pt-br/articles/16705515938711-Cross-Segmento-TOTVS-Backoffice-Linha-Protheus-ADVPL
     -Uso-de-fun%C3%A7%C3%B5es-TLPP-no-AdvPL)
     /*/
-Function U_DESCONTO(Codigo, Contrato) as logical
+Function U_ADIPLENTE(Codigo, Contrato) as logical
 
     Local cSQL      as character
     Local cAliasSQL as character

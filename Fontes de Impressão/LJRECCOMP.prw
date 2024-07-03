@@ -13,6 +13,8 @@ Local aAreaSA1 := SA1->(GetArea())
 Local aAreaUF0 := UF0->(GetArea())
 Local aAreaUF2 := UF2->(GetArea())
 Local aAreaSLG := SLG->(GetArea())
+Local aAreaSM0 := SM0->(GetArea())
+
 
 #DEFINE LARG 48
 #DEFINE ENTER CHR(13)+CHR(10)  
@@ -32,14 +34,25 @@ Local cOperador		:= AllTrim(UsrRetName ( RetCodUsr ( ) ))
 Local nCont			:= 0
 Local Nt			:= 0
 Local cMsgD 		:= ""
-Local lPaCupom		:= GetMv("MV_XCUPOM")
+Local lContinua		:= GetMv("MV_XCUPOM")
+Local lCliAd		:= .F.
+
+
+
+
 
 dbSelectArea("SA1")
 SA1->(MsSeek(xFilial("SA1")+aTitulo[1,13]+aTitulo[1,14]))
 
+//aEval(aTitulo,{|titulo| titulo[3] := alltrim(titulo[3])})
 DbSelectArea("UF2")
 If UF2->(MsSeek(xFilial("UF2")+aTitulo[1,3]))
 	cContrato := UF2->UF2_CODIGO
+	Else 
+		dbSetOrder(2)
+		cChaveBusca := aTitulo[1,15]+aTitulo[1,13]
+		dbSeek(cChaveBusca)
+		cContrato := UF2->UF2_CODIGO
 EndIf										
 
 DbSelectArea("UF0")
@@ -50,8 +63,9 @@ EndIf
 DbSelectArea("SLG")
 SLG->(MsSeek(xFilial("SLG") + cEstacao))
 
-//dbSelectArea("SM0")
-//SM0->(DbSeek(FWCodFil()))
+dbSelectArea("SM0")
+cVerFil := "01"+cFilAnt
+SM0->(DbSeek(cVerFil))
 
 cNOME 	:= SubStr(AllTrim(SM0->M0_NOMECOM),1,LARG)
 cEND1 	:= SubStr(AllTrim(SM0->M0_ENDCOB) + ", " + AllTrim(SM0->M0_COMPCOB),1,LARG)
@@ -121,10 +135,6 @@ cMsgComprovante += Replicate("-",LARG-1)
 
 //Imprimi
 
-
-IF lPaCupom  .And. tlpp.call('U_DESCONTO', SA1->A1_COD,cContrato)
-
-IFRelGer( nHdlECF, cMsgComprovante, 2 )
 //-------------CUPOM DE DESCONTO-------------------
 cMsgD += Replicate("-",LARG) + ENTER
 cMsgD += PadC("CLUBE DE BENEFÍCIOS ROSA MASTER",LARG) + ENTER
@@ -133,7 +143,7 @@ cMsgD += 	"Beneficiário: " + AllTrim(SA1->A1_NOME) + ENTER
 cMsgD += 	"Código Cliente: " + AllTrim(SA1->A1_COD) + Space(7) + "Contrato: " + cContrato + ENTER
 cMsgD += 	"Plano: " + cPlano + ENTER + ENTER
 cMsgD +=    "Status:" +  "AUTORIZADO" + ENTER
-//cMsgD += "Status:" + IF (cContrato == "N/A", "NÃO AUTORIZADO", "AUTORIZADO") + ENTER
+cMsgD += "Status:" + IF (cContrato == "N/A", "NÃO AUTORIZADO", "AUTORIZADO") + ENTER
 cMsgD += 	"Válido por 30 dias a partir desta data" + ENTER
 cMsgD += "Data: " +  DTOC(Date()) + " - " +SubStr(Time(),1,5) + ENTER
 cMsgD += "Dica: Desconto em toda rede de parceiros local" + ENTER
@@ -141,12 +151,26 @@ cMsgD += Replicate("-",LARG-1)
 //--------------FIM---------------------
 
 //Imprimi
-IFRelGer(nHdlECF,cMsgD,1)
 
-Else 
+// -----  Nova Condição de Impressão 
 
-IFRelGer( nHdlECF, cMsgComprovante, 2 )
+IF lContinua // Variavel de controle onde verifica se o parametro "MV_XCUPOM" esta habilitado para impressão do cupom de desconto
 
+		//lCliAd := U_ADIPLENTE(SA1->A1_COD,cContrato)
+	IF AllTrim(aTitulo[1,11]) == "AT" .Or. "RJ"
+		lCliAd  := tlpp.call('U_ADIPLENTE', SA1->A1_COD,cContrato) // Executa a Função para verificar se o cliente ainda tem titulos abertos.
+	Else 
+		lCliAd := .F.
+	EndIF
+	IF lCliAd // Se cliente tiver Em dia
+		IFRelGer( nHdlECF, cMsgComprovante, 2 ) // Imprime a Nota fiscal do cliente
+		IFRelGer(nHdlECF,cMsgD,1) // Imprime o cupom de descontro
+	Else // Caso ainda tenho titulos em abertos 
+		IFRelGer( nHdlECF, cMsgComprovante, 2 ) // Imprime a Nota Fiscal do cliente
+	EndIF
+
+Else
+	IFRelGer( nHdlECF, cMsgComprovante, 2 ) // Imprime a Nota Fiscal do CLiente
 EndIF
 
 
@@ -161,7 +185,9 @@ Next
 RestArea(aAreaSA1)
 RestArea(aAreaUF0)
 RestArea(aAreaUF2)
-RestArea(aAreaSLG)				  
+RestArea(aAreaSLG)	
+RestArea(aAreaSM0)
+			  
 Return
 
 //------------------------------------------------------------------------------

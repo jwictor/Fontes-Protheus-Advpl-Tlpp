@@ -13,7 +13,6 @@ Local aAreaSA1 := SA1->(GetArea())
 Local aAreaUF0 := UF0->(GetArea())
 Local aAreaUF2 := UF2->(GetArea())
 Local aAreaSLG := SLG->(GetArea())
-Local aAreaSM0 := SM0->(GetArea())
 
 
 #DEFINE LARG 48
@@ -29,13 +28,13 @@ Local cMvSimb12 	:= "R$"
 Local nTotal 		:= 0
 Local nLiq			:= 0
 Local cPlano		:= "N/A"
-Local cContrato		:= "N/A"
 Local cOperador		:= AllTrim(UsrRetName ( RetCodUsr ( ) ))
 Local nCont			:= 0
 Local Nt			:= 0
-Local cMsgD 		:= ""
 Local lContinua		:= GetMv("MV_XCUPOM")
-Local lCliAd		:= .F.
+Private lCliAd		:= .F.
+Private cMsgD 		:= ""
+Private cContrato	:= "N/A"
 
 
 
@@ -63,7 +62,7 @@ EndIf
 DbSelectArea("SLG")
 SLG->(MsSeek(xFilial("SLG") + cEstacao))
 
-dbSelectArea("SM0")
+//dbSelectArea("SM0")
 cVerFil := "01"+cFilAnt
 SM0->(DbSeek(cVerFil))
 
@@ -157,11 +156,11 @@ cMsgD += Replicate("-",LARG-1)
 IF lContinua // Variavel de controle onde verifica se o parametro "MV_XCUPOM" esta habilitado para impressão do cupom de desconto
 
 		//lCliAd := U_ADIPLENTE(SA1->A1_COD,cContrato)
-	IF AllTrim(aTitulo[1,11]) == "AT" .Or. "RJ"
+	//IF AllTrim(aTitulo[1,11]) == "AT" .Or. "RJ"
 		lCliAd  := tlpp.call('U_ADIPLENTE', SA1->A1_COD,cContrato) // Executa a Função para verificar se o cliente ainda tem titulos abertos.
-	Else 
+	//Else 
 		lCliAd := .F.
-	EndIF
+	//EndIF
 	IF lCliAd // Se cliente tiver Em dia
 		IFRelGer( nHdlECF, cMsgComprovante, 2 ) // Imprime a Nota fiscal do cliente
 		IFRelGer(nHdlECF,cMsgD,1) // Imprime o cupom de descontro
@@ -170,7 +169,7 @@ IF lContinua // Variavel de controle onde verifica se o parametro "MV_XCUPOM" es
 	EndIF
 
 Else
-	IFRelGer( nHdlECF, cMsgComprovante, 2 ) // Imprime a Nota Fiscal do CLiente
+	IFRelGer( nHdlECF, cMsgComprovante, 2 ) // Imprime a Nota Fiscal do CLiente se o parametro tiver .F.
 EndIF
 
 
@@ -186,7 +185,6 @@ RestArea(aAreaSA1)
 RestArea(aAreaUF0)
 RestArea(aAreaUF2)
 RestArea(aAreaSLG)	
-RestArea(aAreaSM0)
 			  
 Return
 
@@ -316,5 +314,14 @@ For nVias := 1 To 2
     cMsgVia := "V I A  E S T A B E L E C I M E N T O"
 Next
 
+IF lContinua // Variavel de controle onde verifica se o parametro "MV_XCUPOM" esta habilitado para impressão do cupom de desconto
+
+	lCliAd  := tlpp.call('U_ADIPLENTE', SA1->A1_COD,cContrato) // Executa a Função para verificar se o cliente ainda tem titulos abertos.
+
+	IF lCliAd // Se cliente tiver Em dia
+		IFRelGer(nHdlECF,cMsgD,1) // Imprime o cupom de descontro
+	EndIF
+
+EndIF
 
 Return

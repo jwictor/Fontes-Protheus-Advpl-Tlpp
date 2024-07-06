@@ -16,7 +16,10 @@
 	"lastPrograms": [
 		{
 			"label": "sigaloja"
+		},
+		{
+			"label": "x"
 		}
 	],
-	"lastProgramExecuted": "sigaloja"
+	"lastProgramExecuted": "x"
 }

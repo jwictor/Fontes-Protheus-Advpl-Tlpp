@@ -1,0 +1,116 @@
+#include 'totvs.ch'
+#include 'tlpp-core.th'
+
+
+class pedidos from fwAdapterBaseV2
+
+    public method new() constructor
+
+    @get('/pedidos/list')
+    public method listar_pedidos() as logical
+
+end class
+
+method new() class pedidos; return self
+
+
+method listar_pedidos() class pedidos 
+
+    Local lRPC
+	Local nError        as numeric
+	Local cError        as character
+
+    Local jQueryStr     as json
+	Local jResp         as json
+
+    Local cSQL          as character
+	Local cWhere        as character
+	Local cTipo         as character
+	Local cStatus       as character
+	Local nSize         as numeric
+	Local nPage         as numeric
+	Local cOrder        as character
+
+    IF type('cEmpAnt') <> 'C'
+		rpcSetEnv('01','010101')
+		lRPC            := .T.
+	EndIF
+
+
+    try
+        jQueryStr           := oRest:getQueryRequest()
+
+        cTipo               := jQueryStr['tipo'      ]
+        cStatus             := jQueryStr['status'    ]
+        nSize               := jQueryStr['pageSize'  ]
+        nPage               := jQueryStr['page'      ]
+        cOrder              := jQueryStr['order'     ]
+
+        nSize               := if(empty(nSize),10,nSize)
+        nPage               := if(empty(nPage),1 ,nPage)
+
+        cSQL                := "SELECT #QueryFields# FROM " + retSqlName("SCR") + " SCR"
+        cSQL                += CRLF + "WHERE #QueryWhere# "
+
+        cWhere              := "D_E_L_E_T_ = ' ' "
+
+        IF .not. empty(cTipo) 
+            cWhere        += CRLF + "AND CR_TIPO = '" + cTipo + "' "
+        EndIF
+
+        IF .not. empty(cStatus)
+            cWhere         += CRLF + "AND CR_STATUS = '" + cStatus + "' "
+        EndIF
+
+        _Super:new('GET',.T.)
+        ::addMapFields('filial'       ,'CR_FILIAL'  ,.T.)
+        ::addMapFields('n_pedido'     ,'CR_NUM'     ,.T.)
+        ::addMapFields('tipo'         ,'CR_TIPO'    ,.T.)
+        ::addMapFields('user'         ,'CR_USER'    ,.T.)
+        ::addMapFields('grupo'        ,'CR_GRUPO'   ,.T.)
+        ::addMapFields('nivel'        ,'CR_NIVEL'   ,.T.)
+        ::addMapFields('status'       ,'CR_STATUS'  ,.T.)
+        ::addMapFields('emissao'      ,'CR_EMISSAO' ,.T.)
+        ::addMapFields('vtotal'       ,'CR_TOTAL'   ,.T.)
+
+        
+        ::setQuery(cSQL)
+        ::setWhere(cWhere)
+        ::setPageSize(nSize)
+        ::setPage(nPage)
+        ::setOrder(cOrder)
+
+        IF ::execute()
+
+            ::fillGetResponse()
+            oRest:setResponse(::getJsonResponse())
+
+        Else
+
+            nError := ::getCode()
+			cError := ::getMessage()
+
+			jResp := jsonObject():new()
+			jResp['error'] := cError
+
+			oRest:setFault(jResp:toJson())
+
+        EndIF
+
+    catch err
+
+		cError          := err:errorstack
+
+		jResp           := jsonObject():new()
+		jResp['error']  := cError
+
+		oRest:setFault(jResp:toJson())
+
+	endtry
+
+
+    IF lRPC
+		rpcClearEnv()
+	EndIF
+
+return .T.

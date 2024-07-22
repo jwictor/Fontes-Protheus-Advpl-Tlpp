@@ -32,9 +32,9 @@ Local cOperador		:= AllTrim(UsrRetName ( RetCodUsr ( ) ))
 Local nCont			:= 0
 Local Nt			:= 0
 Local lContinua		:= GetMv("MV_XCUPOM")
-Private lCliAd		:= .F.
-Private cMsgD 		:= ""
-Private cContrato	:= "N/A"
+Local lCliAd		:= .F.
+Local cMsgD 		:= ""
+Local cContrato	:= "N/A"
 
 
 
@@ -159,17 +159,17 @@ IF lContinua // Variavel de controle onde verifica se o parametro "MV_XCUPOM" es
 	//IF AllTrim(aTitulo[1,11]) == "AT" .Or. "RJ"
 		lCliAd  := tlpp.call('U_ADIPLENTE', SA1->A1_COD,cContrato) // Executa a Função para verificar se o cliente ainda tem titulos abertos.
 	//Else 
-		lCliAd := .F.
+	//	lCliAd := .F.
 	//EndIF
 	IF lCliAd // Se cliente tiver Em dia
-		IFRelGer( nHdlECF, cMsgComprovante, 2 ) // Imprime a Nota fiscal do cliente
+		IFRelGer( nHdlECF, cMsgComprovante, 2 ) // Imprime o comprovante normal do cliente
 		IFRelGer(nHdlECF,cMsgD,1) // Imprime o cupom de descontro
 	Else // Caso ainda tenho titulos em abertos 
-		IFRelGer( nHdlECF, cMsgComprovante, 2 ) // Imprime a Nota Fiscal do cliente
+		IFRelGer( nHdlECF, cMsgComprovante, 2 ) // Imprime o comprovante normal se o cliente tiver parcela vencida
 	EndIF
 
 Else
-	IFRelGer( nHdlECF, cMsgComprovante, 2 ) // Imprime a Nota Fiscal do CLiente se o parametro tiver .F.
+	IFRelGer( nHdlECF, cMsgComprovante, 2 ) // Imprime o comprovante normal do CLiente se o parametro tiver .F.
 EndIF
 
 
@@ -314,14 +314,5 @@ For nVias := 1 To 2
     cMsgVia := "V I A  E S T A B E L E C I M E N T O"
 Next
 
-IF lContinua // Variavel de controle onde verifica se o parametro "MV_XCUPOM" esta habilitado para impressão do cupom de desconto
-
-	lCliAd  := tlpp.call('U_ADIPLENTE', SA1->A1_COD,cContrato) // Executa a Função para verificar se o cliente ainda tem titulos abertos.
-
-	IF lCliAd // Se cliente tiver Em dia
-		IFRelGer(nHdlECF,cMsgD,1) // Imprime o cupom de descontro
-	EndIF
-
-EndIF
 
 Return

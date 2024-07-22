@@ -37,7 +37,7 @@ Function U_ADIPLENTE(Codigo, Contrato) as logical
        Return .F.
     EndIF
 
-    If lContinua 
+    
 
     cSQL        := "SELECT * FROM " + retSqlName("SE1") + " SE1 "
     cSQL        += "WHERE E1_NUM= '" + cContrato + "' AND E1_CLIENTE= '" + cCodigo + "' "
@@ -73,4 +73,4 @@ Function U_ADIPLENTE(Codigo, Contrato) as logical
     //    rpcClearEnv()
  //   EndIF
 
-EndIf
+

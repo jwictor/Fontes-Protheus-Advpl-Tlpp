@@ -27,6 +27,8 @@ method listar_pedidos() class pedidos
 	Local cWhere        as character
 	Local cTipo         as character
 	Local cStatus       as character
+    Local cUser         as character
+    Local cPedido       as character
 	Local nSize         as numeric
 	Local nPage         as numeric
 	Local cOrder        as character
@@ -42,6 +44,8 @@ method listar_pedidos() class pedidos
 
         cTipo               := jQueryStr['tipo'      ]
         cStatus             := jQueryStr['status'    ]
+        cUser               := jQueryStr['user'      ]
+        cPedido              := jQueryStr['pedido'   ]
         nSize               := jQueryStr['pageSize'  ]
         nPage               := jQueryStr['page'      ]
         cOrder              := jQueryStr['order'     ]
@@ -60,6 +64,14 @@ method listar_pedidos() class pedidos
 
         IF .not. empty(cStatus)
             cWhere         += CRLF + "AND CR_STATUS = '" + cStatus + "' "
+        EndIF
+
+        IF .not. empty(cUser) 
+            cWhere        += CRLF + "AND CR_USER = '" + cUser + "' "
+        EndIF
+
+        IF .not. empty(cPedido) 
+            cWhere        += CRLF + "AND CR_NUM = '" + cPedido + "' "
         EndIF
 
         _Super:new('GET',.T.)

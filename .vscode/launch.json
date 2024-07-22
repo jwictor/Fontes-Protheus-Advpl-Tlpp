@@ -19,7 +19,10 @@
 		},
 		{
 			"label": "x"
+		},
+		{
+			"label": "SIGAMDI"
 		}
 	],
-	"lastProgramExecuted": "x"
+	"lastProgramExecuted": "sigaloja"
 }

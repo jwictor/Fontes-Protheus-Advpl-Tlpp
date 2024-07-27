@@ -82,11 +82,11 @@ method listar_pedidos() class pedidos
         ::addMapFields('grupo'        ,'CR_GRUPO'   ,.T.)
         ::addMapFields('nivel'        ,'CR_NIVEL'   ,.T.)
         ::addMapFields('status'       ,'CR_STATUS'  ,.T.)
-        ::addMapFields('emissao'      ,'CR_EMISSAO' ,.T.)
-        //::addMapFields('emissao'      ,'CR_EMISSAO' ,.T.,.T.,{'CR_EMISSAO','C',10,,},'SCR.CR_EMISSAO')
+        //::addMapFields('emissao'      ,'CR_EMISSAO' ,.T.)
+        ::addMapFields("emissao"      , "CR_EMISSAO"       , .T., .F., { "CR_EMISSAO", "D", 16, 0 }, "CR_EMISSAO")
         ::addMapFields('vtotal'       ,'CR_TOTAL'   ,.T.)
-        ::addMapFields("recno"             , "RECNO"       , .T., .F., { "RECNO", "N", 16, 0 }, "R_E_C_N_O_")
-
+        ::addMapFields("recno"        , "RECNO"       , .T., .F., { "RECNO", "N", 16, 0 }, "R_E_C_N_O_")
+ 
         
         ::setQuery(cSQL)
         ::setWhere(cWhere)

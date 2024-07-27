@@ -24,5 +24,6 @@
 			"label": "SIGAMDI"
 		}
 	],
-	"lastProgramExecuted": "sigaloja"
+	"lastProgramExecuted": "<cancel>",
+	"lastProgramArguments": []
 }

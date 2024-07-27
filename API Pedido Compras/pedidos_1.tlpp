@@ -1,0 +1,76 @@
+#include 'totvs.ch'
+#include 'tlpp-core.th'
+
+NAMESPACE pedidos.api
+
+class PEDIDOS1
+
+    public method new() constructor
+    
+    @get(endpoint='/pedidos',description='Metodo exemplo para listagem dos pedidos de compras')
+    public method listar_pedidos() as logical
+
+
+end class
+
+method new() class PEDIDOS1 ;return self
+
+method listar_pedidos() class PEDIDOS1 as logical
+
+    Local lRPC          as logical
+    Local cErrorStack   as character
+    Local cErrorDescr   as character
+    Local err           as object
+    Local jResp         as json
+    Local jPedidos      as json
+
+     IF type('cEmpAnt') <> 'C'
+        rpcSetEnv('01','010101')
+        lRPC            := .T.
+    EndIF
+
+      try
+
+        jResp           := jsonObject():new()
+        jResp['SCR']    := array(0)
+
+        dbSelectArea("SCR")
+        dbSetOrder(1)
+        dbGoTop()
+
+        While .not. eof()
+
+            jPedidos              := jsonObject():new()
+            jPedidos['filial'       ] := CR_FILIAL
+            jPedidos['n_pedido'     ] := CR_NUM
+            jPedidos['tipo'         ] := alltrim(CR_TIPO    )
+            jPedidos['user'         ] := alltrim(CR_USER  )
+            jPedidos['grupo'        ] := alltrim(CR_GRUPO     )
+            jPedidos['nivel'        ] := CR_NIVEL
+            jPedidos['status'       ] := CR_STATUS
+            jPedidos['emissao'      ] := CR_EMISSAO
+            jPedidos['vtotal'       ] := CR_TOTAL
+            jPedidos['recno'        ] := R_E_C_N_O_
+
+            aadd(jResp['SCR'],jPedidos)
+
+            dbSkip()
+
+        Enddo
+
+        oRest:setResponse(jResp:toJson())
+
+    catch err
+
+        cErrorStack     := err:errorstack
+        cErrorDescr     := err:description
+
+    endtry
+
+
+
+    IF lRPC
+        rpcClearEnv()
+    EndIF 
+
+return .T.

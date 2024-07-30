@@ -29,6 +29,7 @@ method listar_pedidos() class pedidos
 	Local cStatus       as character
     Local cUser         as character
     Local cPedido       as character
+    Local cRecno       as character
 	Local nSize         as numeric
 	Local nPage         as numeric
 	Local cOrder        as character
@@ -46,6 +47,7 @@ method listar_pedidos() class pedidos
         cStatus             := jQueryStr['status'    ]
         cUser               := jQueryStr['user'      ]
         cPedido              := jQueryStr['pedido'   ]
+        cRecno               := jQueryStr['maiorRec'      ]
         nSize               := jQueryStr['pageSize'  ]
         nPage               := jQueryStr['page'      ]
         cOrder              := jQueryStr['order'     ]
@@ -74,6 +76,10 @@ method listar_pedidos() class pedidos
             cWhere        += CRLF + "AND CR_NUM = '" + cPedido + "' "
         EndIF
 
+        IF .not. empty(cRecno) 
+            cWhere        += CRLF + "AND R_E_C_N_O_ <= '" + cRecno + "' "
+        EndIF
+
         _Super:new('GET',.T.)
         ::addMapFields('filial'       ,'CR_FILIAL'  ,.T.)
         ::addMapFields('n_pedido'     ,'CR_NUM'     ,.T.)
@@ -83,7 +89,7 @@ method listar_pedidos() class pedidos
         ::addMapFields('nivel'        ,'CR_NIVEL'   ,.T.)
         ::addMapFields('status'       ,'CR_STATUS'  ,.T.)
         //::addMapFields('emissao'      ,'CR_EMISSAO' ,.T.)
-        ::addMapFields("emissao"      , "CR_EMISSAO"       , .T., .F., { "CR_EMISSAO", "D", 16, 0 }, "CR_EMISSAO")
+        ::addMapFields("emissao"      , "CR_EMISSAO"       , .T., .F., { "CR_EMISSAO", "C", 16, 0 }, "CR_EMISSAO")
         ::addMapFields('vtotal'       ,'CR_TOTAL'   ,.T.)
         ::addMapFields("recno"        , "RECNO"       , .T., .F., { "RECNO", "N", 16, 0 }, "R_E_C_N_O_")
  

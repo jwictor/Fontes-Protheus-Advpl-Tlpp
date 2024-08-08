@@ -1,6 +1,10 @@
 #include 'totvs.ch'
 #include 'tlpp-core.th'
 
+// Fonte que sera aplicado no ambiente de produção
+
+NAMESPACE api.pedidos_list
+
 
 class pedidos from fwAdapterBaseV2
 
@@ -134,3 +138,4 @@ method listar_pedidos() class pedidos
 	EndIF
 
 return .T.
+
